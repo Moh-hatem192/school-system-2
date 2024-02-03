@@ -17,6 +17,11 @@ class School:
         self.yearly_income -= tax
         return f'{self.school_name} yearly income is {self.yearly_income}'    
     
+    @classmethod
+    def list_schools(cls):
+        for i, school in enumerate(School.Schools, 1):
+            print(f'{i}: {school.school_name}')
+
 class SchoolFinance:
     HIGH_TAX = 0.2
     LOW_TAX = 0.12
@@ -50,7 +55,7 @@ class SchoolFinance:
 
 class SchoolInstances:
     @classmethod
-    def create_instances(cls, file_name):
+    def create_school_instances(cls, file_name):
         with open(file_name) as f:
             schools = csv.DictReader(f)
             for school in schools:
@@ -60,22 +65,59 @@ class SchoolInstances:
                 School(school_name, bank_account, yearly_income)    
 
     @classmethod
-    def create_instances(cls, file_name):
+    def create_teachers_instances(cls, file_name):
         with open(file_name) as f:
             teachers = csv.DictReader(f)
             for teacher in teachers:
                 name = teacher.get('name')    
                 school_name = teacher.get('school_name')    
                 id = teacher.get('id')    
-                bank_account = teacher.get('name')    
+                bank_account = teacher.get('bank_account')    
                 phone = teacher.get('phone')
                 hours_worked = teacher.get('hours_worked')
                 hourly_rate = teacher.get('hourly_rate')
                 Teacher(name, school_name, id, bank_account, phone, hours_worked, hourly_rate)    
 
 class Teacher:
-    Teachers = {}
+    Teachers = {
+        'Islam Hesham':{
+            'user_name': 'islam23',
+            'password': '1234',
+            'school': 'Codezilla'
+        },
+        'Mohammed Gouda':{
+            'user_name': 'moh123',
+            'password': '1234',
+            'school': 'Codezilla'
+        },
+        'Ahmad Ibrahim':{
+            'user_name': 'ahmad123',
+            'password': '1234',
+            'school': 'Omareyah'
+        },
+        'Ismaeel Yousef':{
+            'user_name': 'Ismaeel1234',
+            'password': '1234',
+            'school': 'Omareyah'
+        },
+        'Yousef khlewee':{
+            'user_name': 'yousef1234',
+            'password': '1234',
+            'school': 'Oxford'
+        },
+        'Hatem Ahmad':{
+            'user_name': 'hatem123',
+            'password': '1234',
+            'school': 'Oxford'
+        },
+        'Khalid Saeed':{
+            'user_name': 'khalid1234',
+            'password': '1234',
+            'school': 'Itihad'
+        }
+    }
     AllTeachers = []
+
     def __init__(self, name, school, id, bank_account, phone, hours_worked=150, hourly_rate=12):
         self.name = name
         self.school = school
@@ -97,12 +139,23 @@ class Teacher:
     def id(self):
         return self.__id
 
-    def login(self):
+    @classmethod
+    def login(cls):
         user_name = input('please enter your username: ')
-        if user_name != Teacher.Teachers[self.name]['user_name']:
+        if user_name not in Teacher.Teachers.keys():
             print('Invalid username')
+            
+        elif Teacher.Teachers[user_name]['school'] != school_name:
+            print("Sorry you don't work at this school")    
+        
         else:
-            password = input('please enter your password: ')    
+            while True:
+                password = input('please enter your password: ') 
+                if password == Teacher.Teachers[user_name]['password']:
+                    print('Login successefull')
+                    break
+                else:
+                    print('incorrect password try again')       
 
     def calculate_gross_salary(self):
         return self.hourly_rate * self.hours_worked
@@ -113,6 +166,28 @@ class Teacher:
         return f'{self.name} net salary is {net_salry}'
 
 class Manager(Teacher):
-    pass
+    BONUS = 550
+    
 
-ali = Teacher('ali', 'osi', '1234', '12222', '23')
+def main():
+    print('Welcome to the Schools online system: ')
+    SchoolInstances.create_school_instances('Schools.csv')
+    SchoolInstances.create_teachers_instances('Teachers.csv')
+    while True:
+        School.list_schools()
+        choice = input('Please chose your school: ')
+        try:
+            int(choice)
+        except:
+            print('Please enter a valid choice')  
+            continue
+        if int(choice) <1 or int(choice) > 4:
+            print('Please enter a valid choice')
+            continue        
+        choice = int(choice)
+        global school_name
+        school_name = School.Schools[choice - 1].school_name
+        print(f'Welcome to {school_name} school')
+        Teacher.login()
+
+main()    
